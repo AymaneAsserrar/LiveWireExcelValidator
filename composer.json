@@ -1,0 +1,35 @@
+{
+    "name": "aymane-asserrar/livewire-excel-validator",
+    "description": "Validate Excel uploads row-by-row. Returns a ValidationResult with per-cell errors, red-highlighted annotated file, hover comments, and a summary sheet.",
+    "type": "library",
+    "keywords": ["laravel", "livewire", "excel", "xlsx", "validation", "phpspreadsheet", "import"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aymane Asserrar",
+            "homepage": "https://github.com/AymaneAsserrar"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "phpoffice/phpspreadsheet": "^1.29 || ^2.0 || ^3.0 || ^4.0 || ^5.0"
+    },
+    "suggest": {
+        "illuminate/http": "Required to pass an UploadedFile directly instead of a file path.",
+        "illuminate/support": "Required for the Laravel service provider and ValidationResult::download()."
+    },
+    "autoload": {
+        "psr-4": {
+            "AymaneAsserrar\\ExcelValidator\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AymaneAsserrar\\ExcelValidator\\ExcelValidatorServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

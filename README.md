@@ -85,6 +85,8 @@ Without `_label`, the column key is title-cased automatically (`email_address` â
 
 Rules are evaluated in order and stop at the **first failure** per cell.
 
+> **Note (v2.0.0):** Rows that are entirely blank are no longer skipped when any column carries a `required` rule. Previously, a fully empty row would be silently ignored and the `required` error would never fire.
+
 ---
 
 ## The `ValidationResult` Object
@@ -132,7 +134,8 @@ return $result->download('my_errors.xlsx');
 - **Red background + red text** on every invalid cell
 - **Hover comment** on each red cell listing the exact rule(s) that failed
 - **Amber header** on every column that contains at least one error
-- **"Validation Errors" sheet** appended at the end with columns: Row / Column / Value / Error
+
+> **Note:** The "Validation Errors" summary sheet (Row / Column / Value / Error) was removed in **v1.1.0**. Use `$result->flatErrors()` to access error details programmatically.
 
 ---
 

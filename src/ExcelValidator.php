@@ -77,8 +77,10 @@ class ExcelValidator
                 $rowData[$normKey] = $sheet->getCell($this->coord($colIdx, $row))->getFormattedValue();
             }
 
-            if (empty(array_filter($rowData, fn($v) => trim((string) $v) !== ''))) {
-                continue; // skip blank rows
+            $hasRequiredRule = !empty(array_filter($parsedRules, fn($def) => \in_array('required', $def['rules'])));
+
+            if (!$hasRequiredRule && empty(array_filter($rowData, fn($v) => trim((string) $v) !== ''))) {
+                continue; // skip blank rows only when no required rules apply
             }
 
             $this->rows[$row] = $rowData;

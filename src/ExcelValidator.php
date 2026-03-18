@@ -100,7 +100,7 @@ class ExcelValidator
 
         $annotatedPath = null;
         if (! empty($this->errors)) {
-            $annotatedPath = $this->annotate($sheet, $spreadsheet, $headers, $parsedRules, $headerRow, $filename);
+            $annotatedPath = $this->annotate($sheet, $spreadsheet, $headers, $headerRow, $filename);
         }
 
         return new ValidationResult(
@@ -111,7 +111,7 @@ class ExcelValidator
         );
     }
 
-    private function annotate(mixed $sheet, mixed $spreadsheet, array $headers, array $parsedRules, int $headerRow, string $filename): string
+    private function annotate(mixed $sheet, mixed $spreadsheet, array $headers, int $headerRow, string $filename): string
     {
         $columnsWithErrors = [];
         foreach ($this->errors as $colErrors) {
@@ -159,65 +159,11 @@ class ExcelValidator
             }
         }
 
-        $this->addSummarySheet($spreadsheet, $headers, $parsedRules);
-
         $stem = pathinfo($filename, PATHINFO_FILENAME);
         $out  = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $stem . '_errors_' . time() . '.xlsx';
         IOFactory::createWriter($spreadsheet, 'Xlsx')->save($out);
 
         return $out;
-    }
-
-    private function addSummarySheet(mixed $spreadsheet, array $headers, array $parsedRules): void
-    {
-        if ($spreadsheet->sheetNameExists('Validation Errors')) {
-            $spreadsheet->removeSheetByIndex(
-                $spreadsheet->getIndex($spreadsheet->getSheetByName('Validation Errors'))
-            );
-        }
-
-        $s = $spreadsheet->createSheet();
-        $s->setTitle('Validation Errors');
-
-        $cols = ['Row', 'Column', 'Value', 'Error'];
-        foreach ($cols as $i => $h) {
-            $c = Coordinate::stringFromColumnIndex($i + 1) . '1';
-            $s->getCell($c)->setValue($h);
-            $s->getStyle($c)->getFont()->setBold(true);
-            $s->getStyle($c)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('2D3748');
-            $s->getStyle($c)->getFont()->getColor()->setRGB('FFFFFF');
-        }
-
-        $r         = 2;
-        $mainSheet = $spreadsheet->getActiveSheet();
-
-        foreach ($this->errors as $rowIdx => $colErrors) {
-            foreach ($colErrors as $normKey => $messages) {
-                $colIdx = $headers[$normKey] ?? null;
-                $value  = $colIdx ? $mainSheet->getCell($this->coord($colIdx, $rowIdx))->getFormattedValue() : '—';
-                $label  = $parsedRules[$normKey]['label'] ?? $normKey;
-
-                $s->getCell($this->coord(1, $r))->setValue($rowIdx);
-                $s->getCell($this->coord(2, $r))->setValue($label);
-                $s->getCell($this->coord(3, $r))->setValue($value);
-                $s->getCell($this->coord(4, $r))->setValue(implode(' | ', $messages));
-
-                if ($r % 2 === 0) {
-                    $s->getStyle("A{$r}:D{$r}")->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()->setRGB('F7FAFC');
-                }
-                $r++;
-            }
-        }
-
-        foreach (['A', 'B', 'C', 'D'] as $col) {
-            $s->getColumnDimension($col)->setAutoSize(true);
-        }
-
-        $s->getCell($this->coord(1, $r))->setValue('Total:');
-        $s->getCell($this->coord(2, $r))->setValue(($r - 2) . ' error(s)');
-        $s->getStyle("A{$r}:B{$r}")->getFont()->setBold(true);
     }
 
     private function applyRule(string $rule, string $value, mixed $raw, string $label, string $normKey): ?string

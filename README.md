@@ -1,7 +1,7 @@
 # Laravel Excel Validator
 
 Validate Excel file uploads row-by-row against configurable column rules.
-If errors are found, returns an annotated `.xlsx` file with **red cell highlights**, **hover comments**, and a **"Validation Errors" summary sheet**.
+If errors are found, returns an annotated `.xlsx` file with **red cell highlights** and **hover comments**.
 If clean, returns the parsed rows ready to insert into your database.
 
 ---
